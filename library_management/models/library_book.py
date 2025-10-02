@@ -13,35 +13,13 @@ class LibraryBook(models.Model):
     isbn = fields.Char('ISBN')
     publication_year = fields.Char('Publication Year')
     stock = fields.Integer('Stock')
-    is_available = fields.Boolean('Is Available')
+    is_available = fields.Boolean('Is Available', compute='_compute_is_available', store=True)
     author_ids = fields.Many2many('library.author', string='Authors')
     genre_ids = fields.Many2many('library.genre', string='Genres')
     publisher_id = fields.Many2one('library.publisher', string='Publisher')
     category_id = fields.Many2one('library.category', string='Category')
 
-
-
-class LibraryAuthorBook(models.Model):
-    _name = 'library.author'
-    _description = 'LibraryAuthor'
-
-    name = fields.Char('Author Name', required=True)
-
-
-class LibraryPublisherBook(models.Model):
-    _name = 'library.publisher'
-    _description = 'LibraryPublisher'
-
-    name = fields.Char('Publisher Name', required=True)
-
-class LibraryCategory(models.Model):
-    _name = 'library.category'
-    _description = 'LibraryCategory'
-
-    name = fields.Char('Category Name', required=True)
-
-class LibraryGenre(models.Model):
-    _name = 'library.genre'
-    _description = 'LibraryGenre'
-
-    name = fields.Char('Genre Name', required=True)
+    @api.depends('stock')
+    def _compute_is_available(self):
+        for rec in self:
+            rec.is_available = rec.stock > 0

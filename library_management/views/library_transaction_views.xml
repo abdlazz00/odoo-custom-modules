@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="library_borrow_view_form" model="ir.ui.view">
+        <field name="name">library.borrow.view.form</field>
+        <field name="model">library.borrow</field>
+        <field name="arch" type="xml">
+            <form string="Peminjaman">
+                <header>
+                    <button name="action_borrow" type="object" string="Konfirmasi Peminjaman" invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="action_return" type="object" string="Kembalikan Buku" invisible="state != 'borrowed'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft, borrowed, returned"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="member_id"/>
+                        </group>
+                        <group>
+                            <field name="borrow_date"/>
+                            <field name="return_due_date"/>
+                            <field name="total_fine" invisible="total_fine == 0"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Detail Buku">
+                            <field name="borrow_line_ids">
+                                <list editable="bottom">
+                                    <field name="book_id"/>
+                                    <field name="is_returned"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="library_borrow_view_list" model="ir.ui.view">
+        <field name="name">library.borrow.view.list</field>
+        <field name="model">library.borrow</field>
+        <field name="arch" type="xml">
+            <list string="Daftar Peminjaman">
+                <field name="name"/>
+                <field name="member_id"/>
+                <field name="borrow_date"/>
+                <field name="return_due_date"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="library_borrow_action" model="ir.actions.act_window">
+        <field name="name">Peminjaman</field>
+        <field name="res_model">library.borrow</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="library_fine_view_form" model="ir.ui.view">
+        <field name="name">library.fine.view.form</field>
+        <field name="model">library.fine</field>
+        <field name="arch" type="xml">
+            <form string="Pembayaran Denda">
+                <header>
+                    <button name="action_pay" type="object" string="Bayar" invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="action_cancel" type="object" string="Batalkan" invisible="state == 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft, paid"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="borrow_id"/>
+                            <field name="member_id"/>
+                        </group>
+                        <group>
+                            <field name="amount_paid"/>
+                            <field name="payment_date"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="library_fine_view_list" model="ir.ui.view">
+        <field name="name">library.fine.view.list</field>
+        <field name="model">library.fine</field>
+        <field name="arch" type="xml">
+            <list string="Daftar Denda">
+                <field name="name"/>
+                <field name="borrow_id"/>
+                <field name="member_id"/>
+                <field name="amount_paid"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="library_fine_action" model="ir.actions.act_window">
+        <field name="name">Denda</field>
+        <field name="res_model">library.fine</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="library_fine_adjustment_view_form" model="ir.ui.view">
+        <field name="name">library.fine.adjustment.view.form</field>
+        <field name="model">library.fine.adjustment</field>
+        <field name="arch" type="xml">
+            <form string="Penyesuaian Denda">
+                <header>
+                    <button name="action_apply_adjustment" type="object" string="Confirm"
+                            invisible="state != 'draft'"
+                            class="oe_highlight"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft, approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="borrow_id" readonly="state != 'draft'" domain="[('is_overdue', '=', True),('total_fine', '>', 0), ('state', '=', 'borrowed')]"/>
+                            <field name="member_id" readonly="1"/>
+                            <field name="borrow_date" readonly="1"/>
+                            <field name="return_due_date" readonly="1"/>
+                            <field name="current_fine" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="reason" placeholder="Masukkan alasan penyesuaian..." readonly="state != 'draft'"/>
+                            <field name="adjusted_fine" readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="library_fine_adjustment_view_tree" model="ir.ui.view">
+        <field name="name">library.fine.adjustment.view.tree</field>
+        <field name="model">library.fine.adjustment</field>
+        <field name="arch" type="xml">
+            <list string="Fine Adjustment">
+                <field name="name"/>
+                <field name="borrow_id"/>
+                <field name="member_id"/>
+                <field name="current_fine"/>
+                <field name="adjusted_fine"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="library_fine_adjustment_action" model="ir.actions.act_window">
+        <field name="name">Penyesuaian Denda</field>
+        <field name="res_model">library.fine.adjustment</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="library_member_action" model="ir.actions.act_window">
+        <field name="name">Anggota</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain" eval="[('category_id', 'in', [ref('library_management.partner_category_member')])]"/>
+        <field name="context" eval="{'default_category_id': [(4, ref('library_management.partner_category_member'))]}"/>
+    </record>
+</odoo>

@@ -9,3 +9,11 @@ access_library_genre_user,access.library.genre.user,model_library_genre,library_
 access_library_genre_librarian,access.library.genre.librarian,model_library_genre,library_management.group_library_librarian,1,1,1,1
 access_library_category_user,access.library.category.user,model_library_category,library_management.group_library_user,1,0,0,0
 access_library_category_librarian,access.library.category.librarian,model_library_category,library_management.group_library_librarian,1,1,1,1
+access_library_borrow_librarian,library.borrow.librarian,model_library_borrow,library_management.group_library_librarian,1,1,1,1
+access_library_borrow_user,library.borrow.user,model_library_borrow,library_management.group_library_user,1,0,0,0
+access_library_borrow_lines_librarian,library.borrow.lines.librarian,model_library_borrow_lines,library_management.group_library_librarian,1,1,1,1
+access_library_borrow_lines_user,library.borrow.lines.user,model_library_borrow_lines,library_management.group_library_user,1,0,0,0
+access_library_fine_librarian,library.fine.librarian,model_library_fine,library_management.group_library_librarian,1,1,1,1
+access_library_fine_user,library.fine.user,model_library_fine,library_management.group_library_user,1,0,0,0
+access_library_fine_adjustment_librarian,library.fine.adjustment.librarian,model_library_fine_adjustment,library_management.group_library_librarian,1,1,1,1
+access_library_fine_adjustment_user,library.fine.adjustment.user,model_library_fine_adjustment,library_management.group_library_user,1,0,0,0

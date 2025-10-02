@@ -1,44 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Your custom views here -->
-    <menuitem id="menu_library_root"
-              name="Library"
-              web_icon="library_management,static/description/logo-icon.png"
-              sequence="10"/>
 
-    <menuitem id="menu_library_collection"
-              name="Book Collections"
-              parent="menu_library_root"
-              sequence="10"/>
+    <menuitem
+        id="menu_library_borrow_root"
+        name="Borrows"
+        web_icon="library_management,static/description/borrow.png"
+        action="library_borrow_action"
+        sequence="10"/>
 
-    <menuitem id="menu_library_book"
-              name="Books"
-              parent="menu_library_collection"
-              action="library_book_action"
-              sequence="10"/>
+    <menuitem
+        id="menu_library_member"
+        name="Member"
+        web_icon="library_management,static/description/group.png"
+        action="library_member_action"
+        sequence="20"/>
 
-    <menuitem id="menu_library_author"
-              name="Authors"
-              parent="menu_library_collection"
-              action="library_author_action"
-              sequence="20"/>
+    <menuitem
+        id="menu_library_book_collection"
+        name="Book Collections"
+        web_icon="library_management,static/description/books.png"
+        action="library_book_action"
+        sequence="30"/>
 
-    <menuitem id="menu_library_publisher"
-              name="Publisher"
-              parent="menu_library_collection"
-              action="library_publisher_action"
-              sequence="30"/>
+    <menuitem
+        id="menu_library_fine_root"
+        name="Fine"
+        web_icon="library_management,static/description/fine.png"
+        sequence="40"/>
 
-    <menuitem id="menu_library_category"
-              name="Book Category"
-              parent="menu_library_collection"
-              action="library_category_action"
-              sequence="40"/>
+    <menuitem
+        id="menu_library_fine"
+        name="Fine"
+        parent="menu_library_fine_root"
+        action="library_fine_action"
+        sequence="10"/>
 
-    <menuitem id="menu_library_genre"
-              name="Book Genres"
-              parent="menu_library_collection"
-              action="library_genre_action"
-              sequence="50"/>
+    <menuitem
+        id="menu_library_fine_adjustment"
+        name="Fine Adjustment"
+        parent="menu_library_fine_root"
+        action="library_fine_adjustment_action"
+        sequence="20"/>
 
+    <menuitem
+        id="menu_library_configuration"
+        name="Configurations"
+        web_icon="library_management,static/description/settings.png"
+        sequence="50"/>
+
+    <menuitem
+        id="menu_library_author"
+        name="Authors"
+        parent="menu_library_configuration"
+        action="library_author_action"
+        sequence="10"/>
+
+    <menuitem
+        id="menu_library_publisher"
+        name="Publisher"
+        parent="menu_library_configuration"
+        action="library_publisher_action"
+        sequence="20"/>
+
+    <menuitem
+        id="menu_library_genre"
+        name="Genre"
+        parent="menu_library_configuration"
+        action="library_genre_action"
+        sequence="30"/>
+
+    <menuitem
+        id="menu_library_category"
+        name="Book Category"
+        parent="menu_library_configuration"
+        action="library_category_action"
+        sequence="40"/>
 </odoo>
