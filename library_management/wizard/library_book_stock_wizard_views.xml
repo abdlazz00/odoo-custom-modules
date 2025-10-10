@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_library_book_stock_wizard_form" model="ir.ui.view">
+        <field name="name">library.book.stock.wizard.form</field>
+        <field name="model">library.book.stock.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Update Stok Buku" class="o_library_stock_wizard">
+                <group>
+                    <field name="book_id" readonly="1"/>
+                    <field name="operation" required="1"/>
+                    <field name="amount" required="1"/>
+                    <field name="note"/>
+                </group>
+                <footer>
+                    <button name="action_confirm_update" string="Confirm" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

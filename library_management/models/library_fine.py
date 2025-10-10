@@ -30,8 +30,18 @@ class LibraryFine(models.Model):
         if self.amount_paid <= 0:
             raise UserError(_("Jumlah yang dibayar harus lebih dari 0."))
 
-        self.write({'state': 'paid'})
-        self.borrow_id.message_post(body=_("Pembayaran denda sebesar %s telah dilunasi.") % (self.amount_paid))
+        self.write({"state": "paid"})
+        borrow = self.borrow_id
+        if borrow:
+            new_paid = borrow.fine_paid + self.amount_paid
+            borrow.write({"fine_paid": new_paid})
+            borrow.message_post(
+                body=_("Pembayaran denda Rp %s diterima. <br/>Sisa denda: Rp %s")
+                % (self.amount_paid, borrow.fine_balance)
+            )
+        self.message_post(
+            body=_("Pembayaran denda sebesar Rp %s telah dicatat.") % (self.amount_paid)
+        )
 
     def action_cancel(self):
         self.ensure_one()

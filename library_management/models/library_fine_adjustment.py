@@ -29,11 +29,19 @@ class LibraryFineAdjustment(models.Model):
         return super(LibraryFineAdjustment, self).create(vals)
 
     def action_apply_adjustment(self):
-        self.ensure_one()
-        if self.borrow_id:
-            self.borrow_id.total_fine = self.adjusted_fine
-            self.state = "approved"
-            self.borrow_id.message_post(
-                body=_("Denda disesuaikan dari %s menjadi %s. Alasan: %s") % (
-                    self.current_fine, self.adjusted_fine, self.reason))
-        return True
+        for rec in self:
+            if rec.borrow_id:
+                borrow = rec.borrow_id
+                before = borrow.total_fine
+                after = rec.adjusted_fine
+
+                borrow.write({'total_fine': after})
+                rec.state = "approved"
+                borrow.message_post(
+                    body=_(
+                        "💰 Penyesuaian denda: dari Rp %s menjadi Rp %s.<br/>Alasan: %s"
+                    ) % (before, after, rec.reason)
+                )
+                self.message_post(
+                    body=_("Penyesuaian denda disetujui untuk peminjaman %s.") % borrow.name
+                )

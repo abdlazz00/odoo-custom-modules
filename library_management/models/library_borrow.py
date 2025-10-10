@@ -23,6 +23,8 @@ class LibraryBorrow(models.Model):
     is_overdue = fields.Boolean(string='Terlambat', default=False, store=True)
     total_books = fields.Integer(string='Total Buku', compute='_compute_total_books', store=True)
     total_fine = fields.Float(string='Total Denda', store=True)
+    fine_balance = fields.Float(string='Sisa Denda',compute='_compute_fine_balance' ,store=True)
+    fine_paid = fields.Float(string='Denda Terbayar', store=True)
     borrow_line_ids = fields.One2many(
         'library.borrow.lines', 'borrow_id', string='Detail Buku')
     fine_adjustment_ids = fields.One2many('library.fine.adjustment', 'borrow_id', string='Detail Denda')
@@ -38,12 +40,23 @@ class LibraryBorrow(models.Model):
         for rec in self:
             rec.total_books = len(rec.borrow_line_ids)
 
+    @api.depends('total_fine', 'fine_paid')
+    def _compute_fine_balance(self):
+        for rec in self:
+            total = rec.total_fine or 0.0
+            paid = rec.fine_paid or 0.0
+            rec.fine_balance = total - paid
+
     @api.model
     def check_overdue_and_calculate_fine(self):
-        overdue_borrows = self.search([('state', '=', 'borrowed'),
-                                       ('return_due_date', '<', fields.Date.today())
-                                       ])
-        daily_fine = self.env['ir.config_parameter'].sudo().get_param('library_management.daily_fine_amount', 1000.0)
+        overdue_borrows = self.search([
+            ('state', '=', 'borrowed'),
+            ('return_due_date', '<', fields.Date.today())
+        ])
+        daily_fine = self.env['ir.config_parameter'].sudo().get_param(
+            'library_management.daily_fine_amount', 1000.
+        )
+
         for borrow in overdue_borrows:
             days_overdue = (fields.Date.today() - borrow.return_due_date).days
             total_fine = days_overdue * float(daily_fine)
@@ -57,16 +70,42 @@ class LibraryBorrow(models.Model):
     def action_borrow(self):
         for rec in self:
             if not rec.borrow_line_ids:
-                raise UserError(_('Anda tidak bisa meminjam tanpa buku.'))
+                raise UserError(_("Anda tidak bisa meminjam tanpa buku."))
+
             for line in rec.borrow_line_ids:
-                if line.book_id.stock < line.quantity:
-                    raise UserError(_("Stok buku '%s' tidak mencukupi untuk peminjaman ini. Stok tersedia: %d") % (line.book_id.name, line.book_id.stock))
+                book = line.book_id
+                if book.remaining_stock < line.quantity:
+                    raise UserError(
+                        _("Stok buku '%s' tidak mencukupi. Sisa stok: %d")
+                        % (book.name, book.remaining_stock)
+                    )
 
-                line.book_id.stock -= line.quantity
-                line.book_id._compute_is_available()
+                # Tambah ke jumlah terpinjam
+                new_borrowed = book.borrowed_stock + line.quantity
+                new_remaining = max(book.stock - new_borrowed, 0)
 
-            rec.state = 'borrowed'
-            rec.message_post(body=_("Peminjaman berhasil dikonfirmasi."))
+                book.sudo().write(
+                    {
+                        "borrowed_stock": new_borrowed,
+                        "remaining_stock": new_remaining,
+                        "is_available": new_remaining > 0,
+                    }
+                )
+                book.message_post(
+                    body=_(
+                        "📚 Buku '%s' dipinjam sebanyak %d eksemplar oleh anggota '%s'.<br/>Sisa stok: %d / %d"
+                    )
+                    % (
+                        book.name,
+                        line.quantity,
+                        rec.member_id.name,
+                        new_remaining,
+                        book.stock,
+                    )
+                )
+
+            rec.state = "borrowed"
+            rec.message_post(body=_("✅ Peminjaman dikonfirmasi."))
         return True
 
     def action_return(self):
@@ -74,17 +113,38 @@ class LibraryBorrow(models.Model):
             for line in rec.borrow_line_ids:
                 if not line.is_returned:
                     line.is_returned = True
-                    line.book_id.stock += line.quantity
-                    line.book_id._compute_is_available()
+                    book = line.book_id
 
-            if rec.total_fine > 0:
-                self.env['library.fine'].create({
-                    'borrow_id': rec.id,
-                    'amount_paid': rec.total_fine,
-                    'state': 'draft',
-                })
-            rec.state = 'returned'
-            rec.message_post(body=_("Semua buku telah dikembalikan. Transaksi selesai."))
+                    # Kurangi jumlah terpinjam
+                    new_borrowed = max(book.borrowed_stock - line.quantity, 0)
+                    new_remaining = max(book.stock - new_borrowed, 0)
+
+                    book.sudo().write(
+                        {
+                            "borrowed_stock": new_borrowed,
+                            "remaining_stock": new_remaining,
+                            "is_available": new_remaining > 0,
+                        }
+                    )
+
+                    book.message_post(
+                        body=_(
+                            "📗 Buku '%s' dikembalikan sebanyak %d eksemplar oleh anggota '%s'.<br/>Sisa stok sekarang: %d / %d"
+                        )
+                        % (
+                            book.name,
+                            line.quantity,
+                            rec.member_id.name,
+                            new_remaining,
+                            book.stock,
+                        )
+                    )
+
+            rec.state = "returned"
+            rec.message_post(
+                body=_("📦 Semua buku dalam transaksi ini telah dikembalikan.")
+            )
+        return True
 
 
 class LibraryBorrowLines(models.Model):

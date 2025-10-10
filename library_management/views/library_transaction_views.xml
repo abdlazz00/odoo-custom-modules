@@ -23,8 +23,12 @@
                         </group>
                         <group>
                             <field name="borrow_date"/>
-                            <field name="return_due_date"/>
-                            <field name="total_fine" invisible="total_fine == 0"/>
+                            <field name="return_due_date" string="Tanggal Pengembalian"/>
+                        </group>
+                        <group string="Fine Information" invisible="total_fine == 0">
+                            <field name="total_fine" readonly="1"/>
+                            <field name="fine_balance" readonly="1"/>
+                            <field name="fine_paid" readonly="1"/>
                         </group>
                     </group>
                     <notebook>
@@ -169,6 +173,27 @@
         <field name="name">Penyesuaian Denda</field>
         <field name="res_model">library.fine.adjustment</field>
         <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="library_member_view_form" model="ir.ui.view">
+        <field name="name">library.member.view.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='vat']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='website']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='sales_purchases']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='internal_notes']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
     </record>
 
     <record id="library_member_action" model="ir.actions.act_window">
