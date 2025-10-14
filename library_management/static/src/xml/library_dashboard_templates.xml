@@ -6,61 +6,34 @@
         <div class="o_library_dashboard o_content">
             <h1 class="mb-4 fw-bold">📊 Library Management Dashboard</h1>
 
-            <!-- ===================== FILTER SECTION ===================== -->
-            <div class="filter-section o_card mb-3 p-3">
-                <div class="d-flex flex-wrap align-items-center gap-2">
-                    <div>
-                        <input type="date" id="filter_from" placeholder="From Date" class="form-control form-control-sm"/>
-                    </div>
-                    <div>
-                        <input type="date" id="filter_to" placeholder="End Date" class="form-control form-control-sm"/>
-                    </div>
-                    <div>
-                        <input type="text" id="filter_member" placeholder="Cari anggota..." class="form-control form-control-sm"/>
-                    </div>
-                    <div class="mt-3 mt-sm-0">
-                        <button type="button" t-on-click="applyFilter" class="btn btn-primary btn-sm">
-                            <i class="fa fa-filter me-1"/> Terapkan
-                        </button>
-                    </div>
-                </div>
-            </div>
-
             <!-- ===================== KPI CARDS ===================== -->
             <div class="kpi-row">
-
                 <div class="kpi-card" data-icon="📚">
                     <div class="text-muted"><i class="fa fa-book me-1"/> Total Buku</div>
                     <h3 t-esc="state.kpis.total_books || 0"/>
                 </div>
-
-                <div class="kpi-card" data-icon="📦">
-                    <div class="text-muted"><i class="fa fa-layer-group me-1"/> Total Stok Buku</div>
-                    <h3 t-esc="state.kpis.total_stock_books || 0"/>
-                </div>
-
                 <div class="kpi-card" data-icon="✅">
                     <div class="text-muted"><i class="fa fa-check-circle text-success me-1"/> Buku Tersedia</div>
                     <h3 t-esc="state.kpis.available_books || 0"/>
                 </div>
-
-                <div class="kpi-card" data-icon="📖">
-                    <div class="text-muted"><i class="fa fa-book-reader text-warning me-1"/> Buku Dipinjam</div>
-                    <h3 t-esc="state.kpis.borrowed_books || 0"/>
-                </div>
-
-                <div class="kpi-card" data-icon="💰">
-                    <div class="text-muted"><i class="fa fa-money-bill text-success me-1"/> Denda Dibayar</div>
-                    <h3 t-esc="state.kpis.total_fines_paid || 'Rp 0'"/>
-                </div>
-
                 <div class="kpi-card" data-icon="⚠️">
                     <div class="text-muted"><i class="fa fa-exclamation-circle text-danger me-1"/> Denda Belum Dibayar</div>
                     <h3 t-esc="state.kpis.total_fines_balance || 'Rp 0'"/>
                 </div>
 
+                <div class="kpi-card" data-icon="📦">
+                    <div class="text-muted"><i class="fa fa-layer-group me-1"/> Total Stok Fisik</div>
+                    <h3 t-esc="state.kpis.total_stock_books || 0"/>
+                </div>
+                <div class="kpi-card" data-icon="📖">
+                    <div class="text-muted"><i class="fa fa-book-reader text-warning me-1"/> Buku Dipinjam</div>
+                    <h3 t-esc="state.kpis.borrowed_books || 0"/>
+                </div>
+                <div class="kpi-card" data-icon="💰">
+                    <div class="text-muted"><i class="fa fa-money-bill text-success me-1"/> Denda Dibayar</div>
+                    <h3 t-esc="state.kpis.total_fines_paid || 'Rp 0'"/>
+                </div>
             </div>
-
 
             <!-- ===================== CHARTS ===================== -->
             <div class="charts-section mt-4">
@@ -92,42 +65,54 @@
             <!-- ===================== TABLES ===================== -->
             <div class="tables-row mt-4">
                 <div class="o_card p-3">
-                    <h6 class="fw-bold mb-3">🏆 Buku Paling Sering Dipinjam</h6>
-                    <table class="table table-sm align-middle">
+                    <h6 class="fw-bold mb-3">📦 Informasi Stok Buku</h6>
+                    <table class="table table-sm table-hover align-middle">
                         <thead>
-                            <tr>
+                            <tr class="text-muted">
                                 <th>Judul Buku</th>
-                                <th class="text-end">Jumlah Dipinjam</th>
+                                <th class="text-end">Total Stok</th>
+                                <th class="text-end">Dipinjam</th>
+                                <th class="text-end fw-bold">Tersedia</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr t-foreach="state.top_books" t-as="book" t-key="book.id">
+                            <tr t-foreach="state.book_stock_list" t-as="book" t-key="book.id">
                                 <td><t t-esc="book.name"/></td>
-                                <td class="text-end fw-semibold"><t t-esc="book.qty"/></td>
+                                <td class="text-end"><t t-esc="book.stock"/></td>
+                                <td class="text-end text-warning"><t t-esc="book.borrowed_stock"/></td>
+                                <td class="text-end fw-bold text-success"><t t-esc="book.remaining_stock"/></td>
                             </tr>
-                            <tr t-if="!state.top_books.length">
-                                <td colspan="2" class="text-center text-muted">Tidak ada data buku</td>
+                            <tr t-if="!state.book_stock_list.length">
+                                <td colspan="4" class="text-center text-muted py-3">Tidak ada data buku</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
                 <div class="o_card p-3">
-                    <h6 class="fw-bold mb-3">👥 Anggota Paling Aktif</h6>
-                    <table class="table table-sm align-middle">
+                    <h6 class="fw-bold mb-3">🏆 Top 10 Anggota Teraktif</h6>
+                    <table class="table table-sm table-hover align-middle">
                         <thead>
-                            <tr>
+                            <tr class="text-muted">
+                                <th style="width: 5%;">#</th>
                                 <th>Nama Anggota</th>
                                 <th class="text-end">Jumlah Peminjaman</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr t-foreach="state.top_members" t-as="member" t-key="member.id">
-                                <td><t t-esc="member.name"/></td>
-                                <td class="text-end fw-semibold"><t t-esc="member.qty"/></td>
+                            <tr t-foreach="state.top_members_list" t-as="member" t-key="member.id" t-log="member">
+                                <td class="fw-bold">
+                                    <t t-esc="member_index + 1"/>
+                                </td>
+                                <td>
+                                    <t t-esc="member.name"/>
+                                </td>
+                                <td class="text-end fw-semibold">
+                                    <t t-esc="member.borrow_count"/>
+                                </td>
                             </tr>
-                            <tr t-if="!state.top_members.length">
-                                <td colspan="2" class="text-center text-muted">Tidak ada data anggota</td>
+                            <tr t-if="!state.top_members_list.length">
+                                <td colspan="3" class="text-center text-muted py-3">Tidak ada data peminjaman anggota</td>
                             </tr>
                         </tbody>
                     </table>

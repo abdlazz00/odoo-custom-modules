@@ -15,8 +15,8 @@ class LibraryDashboard extends Component {
         this.state = useState({
             loading: true,
             kpis: {},
-            top_books: [],
-            top_members: [],
+            book_stock_list: [],
+            top_members_list: [],
         });
 
         onMounted(() => {
@@ -70,17 +70,9 @@ class LibraryDashboard extends Component {
             // ======================================================
             // TOP DATA
             // ======================================================
-            this.state.top_books = (data.top_books || []).map(r => ({
-                id: r.book_id?.[0],
-                name: r.book_id?.[1] || "Tidak diketahui",
-                qty: r.id_count || 0,
-            }));
+            this.state.book_stock_list = data.book_stock_list || [];
 
-            this.state.top_members = (data.top_members || []).map(r => ({
-                id: r.member_id?.[0],
-                name: r.member_id?.[1] || "Tidak diketahui",
-                qty: r.id_count || 0,
-            }));
+            this.state.top_members_list = data.top_members_list || [];
 
             // ======================================================
             // RENDER CHART

@@ -5,50 +5,74 @@ from odoo.http import request
 
 class LibraryDashboardController(http.Controller):
 
-    @http.route('/library/dashboard/data', type='json', auth='user')
+    @http.route("/library/dashboard/data", type="json", auth="user")
     def get_dashboard_data(self):
         env = request.env
 
-        # =====================================================
-        # 🔹 KPI SECTION
-        # =====================================================
-        books = env['library.book'].sudo().search([])
+        # ... (Kode KPI tidak berubah) ...
+        books = env["library.book"].sudo().search([])
         total_books = len(books)
-        total_stock_books = sum(books.mapped('stock'))
-        available_books = sum(books.mapped('remaining_stock'))
-        borrowed_books = sum(books.mapped('borrowed_stock'))
+        total_stock_books = sum(books.mapped("stock"))
+        available_books = sum(books.mapped("remaining_stock"))
+        borrowed_books = sum(books.mapped("borrowed_stock"))
 
-        borrows = env['library.borrow'].sudo().search([])
-        total_fine_paid = sum(borrows.mapped('fine_paid'))
-        total_fine_balance = sum(borrows.mapped('fine_balance'))
+        borrows = env["library.borrow"].sudo().search([])
+        total_fine_paid = sum(borrows.mapped("fine_paid"))
+        total_fine_balance = sum(borrows.mapped("fine_balance"))
 
-        # =====================================================
-        # 🔹 CHART DATA (optional, tetap dipakai)
-        # =====================================================
-        borrow_chart = env['library.borrow'].sudo().read_group(
-            [('state', '!=', 'draft')],
-            ['id:count'],
-            ['borrow_date:month'],
+        # ... (Kode chart tidak berubah) ...
+        borrow_chart = (
+            env["library.borrow"]
+            .sudo()
+            .read_group(
+                [("state", "!=", "draft")],
+                ["id:count"],
+                ["borrow_date:month"],
+            )
         )
-
-        category_chart = env['library.book'].sudo().read_group(
-            [], ['id:count'], ['category_id']
+        category_chart = (
+            env["library.book"].sudo().read_group([], ["id:count"], ["category_id"])
         )
-
         fine_chart = [
             {"label": "Denda Dibayar", "value": total_fine_paid},
             {"label": "Belum Dibayar", "value": total_fine_balance},
         ]
 
-        top_books = env['library.borrow.lines'].sudo().read_group(
-            [], ['id:count'], ['book_id']
+        # PASTIKAN BLOK INI SUDAH DIGANTI
+        book_stock_list = (
+            env["library.book"]
+            .sudo()
+            .search_read(
+                [],
+                ["name", "stock", "borrowed_stock", "remaining_stock"],
+                limit=10,
+                order="remaining_stock asc",
+            )
         )
-        top_books_sorted = sorted(top_books, key=lambda x: x.get('id_count', 0), reverse=True)[:5]
 
-        top_members = env['library.borrow'].sudo().read_group(
-            [], ['id:count'], ['member_id']
+        top_members_query = (
+            env["library.borrow"]
+            .sudo()
+            .read_group(
+                [("state", "!=", "draft")],
+                ["id:count"],
+                ["member_id"],
+                limit=10,
+                orderby="member_id_count DESC",
+            )
         )
-        top_members_sorted = sorted(top_members, key=lambda x: x.get('id_count', 0), reverse=True)[:5]
+
+        # Kode di bawah ini sudah benar
+        top_members_list = []
+        for m in top_members_query:
+            if m.get("member_id"):
+                top_members_list.append(
+                    {
+                        "id": m["member_id"][0],
+                        "name": m["member_id"][1],
+                        "borrow_count": m["member_id_count"],
+                    }
+                )
 
         # =====================================================
         # 🔹 RETURN STRUCTURE
@@ -65,6 +89,6 @@ class LibraryDashboardController(http.Controller):
             "borrow_chart": borrow_chart,
             "category_chart": category_chart,
             "fine_chart": fine_chart,
-            "top_books": top_books_sorted,
-            "top_members": top_members_sorted,
+            "book_stock_list": book_stock_list,
+            "top_members_list": top_members_list,
         }

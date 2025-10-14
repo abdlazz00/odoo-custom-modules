@@ -19,17 +19,14 @@
 
 /* KPI cards */
 .kpi-row {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 16px;
-  justify-content: flex-start;
-  align-items: stretch;
   margin-bottom: 20px;
 }
 .kpi-card {
-  flex: 1 1 calc(25% - 16px);
+  /*width: 280px;*/
   min-width: 200px;
-  max-width: 280px;
   background: #fff;
   border-radius: 12px;
   padding: 16px;
@@ -58,10 +55,10 @@
 }
 .kpi-card:nth-child(1) { border-top: 4px solid #3498db; background: linear-gradient(145deg, #e3f2fd, #ffffff); }
 .kpi-card:nth-child(2) { border-top: 4px solid #1abc9c; background: linear-gradient(145deg, #e8fdf6, #ffffff); }
-.kpi-card:nth-child(3) { border-top: 4px solid #27ae60; background: linear-gradient(145deg, #eafaf1, #ffffff); }
+.kpi-card:nth-child(3) { border-top: 4px solid #e74c3c; background: linear-gradient(145deg, #fdecea, #ffffff); }
 .kpi-card:nth-child(4) { border-top: 4px solid #f39c12; background: linear-gradient(145deg, #fff6e5, #ffffff); }
 .kpi-card:nth-child(5) { border-top: 4px solid #2ecc71; background: linear-gradient(145deg, #ebfbee, #ffffff); }
-.kpi-card:nth-child(6) { border-top: 4px solid #e74c3c; background: linear-gradient(145deg, #fdecea, #ffffff); }
+.kpi-card:nth-child(6) { border-top: 4px solid #27ae60; background: linear-gradient(145deg, #eafaf1, #ffffff); }
 .kpi-card::after {
   content: attr(data-icon);
   position: absolute;
@@ -172,7 +169,9 @@
     padding: 16px;
     max-height: calc(100vh - 50px);
   }
-  .kpi-card { flex: 1 1 calc(33.333% - 16px); }
+  .kpi-row {
+    grid-template-columns: repeat(2, 1fr); /* <<-- UBAH JADI 2 KOLOM */
+  }
   .chart-bar-card { height: 320px; }
   .chart-bar-card .chart-container { max-height: 240px; }
   .chart-pair { grid-template-columns: 1fr; }
@@ -180,8 +179,12 @@
   .chart-pair canvas { max-height: 200px; }
   .tables-row { grid-template-columns: 1fr; }
 }
+
 @media (max-width: 768px) {
-  .kpi-card { flex: 1 1 calc(50% - 12px); padding: 12px; }
+  .kpi-row {
+    grid-template-columns: 1fr; /* <<-- UBAH JADI 1 KOLOM */
+  }
+  .kpi-card { padding: 12px; }
   .kpi-card h3 { font-size: 22px; }
   .chart-bar-card { height: 280px; padding: 16px; }
   .chart-bar-card .chart-container { max-height: 200px; }
@@ -190,8 +193,9 @@
   .chart-pair canvas { max-height: 180px; }
   .tables-row { grid-template-columns: 1fr; }
 }
+
 @media (max-width: 480px) {
-  .kpi-card { flex: 1 1 100%; max-width: none; }
+  /* Aturan kpi-card di sini tidak lagi diperlukan karena sudah 1 kolom */
   .chart-bar-card { height: 260px; padding: 12px; }
   .chart-bar-card .chart-container { max-height: 180px; }
   .chart-pair .o_card { height: 220px; padding: 12px; }
