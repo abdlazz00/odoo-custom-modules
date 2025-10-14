@@ -80,7 +80,6 @@ class LibraryBorrow(models.Model):
                         % (book.name, book.remaining_stock)
                     )
 
-                # Tambah ke jumlah terpinjam
                 new_borrowed = book.borrowed_stock + line.quantity
                 new_remaining = max(book.stock - new_borrowed, 0)
 
@@ -115,7 +114,6 @@ class LibraryBorrow(models.Model):
                     line.is_returned = True
                     book = line.book_id
 
-                    # Kurangi jumlah terpinjam
                     new_borrowed = max(book.borrowed_stock - line.quantity, 0)
                     new_remaining = max(book.stock - new_borrowed, 0)
 

@@ -25,7 +25,6 @@
   margin-bottom: 20px;
 }
 .kpi-card {
-  /*width: 280px;*/
   min-width: 200px;
   background: #fff;
   border-radius: 12px;
@@ -170,7 +169,7 @@
     max-height: calc(100vh - 50px);
   }
   .kpi-row {
-    grid-template-columns: repeat(2, 1fr); /* <<-- UBAH JADI 2 KOLOM */
+    grid-template-columns: repeat(2, 1fr);
   }
   .chart-bar-card { height: 320px; }
   .chart-bar-card .chart-container { max-height: 240px; }
@@ -182,7 +181,7 @@
 
 @media (max-width: 768px) {
   .kpi-row {
-    grid-template-columns: 1fr; /* <<-- UBAH JADI 1 KOLOM */
+    grid-template-columns: 1fr;
   }
   .kpi-card { padding: 12px; }
   .kpi-card h3 { font-size: 22px; }
@@ -195,7 +194,6 @@
 }
 
 @media (max-width: 480px) {
-  /* Aturan kpi-card di sini tidak lagi diperlukan karena sudah 1 kolom */
   .chart-bar-card { height: 260px; padding: 12px; }
   .chart-bar-card .chart-container { max-height: 180px; }
   .chart-pair .o_card { height: 220px; padding: 12px; }

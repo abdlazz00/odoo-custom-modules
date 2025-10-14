@@ -63,6 +63,7 @@
                                 <ul class="list-unstyled mb-0">
                                     <li><strong>Author:</strong> <field name="author_ids" widget="many2many_tags"/></li>
                                     <li><strong>Stock:</strong> <field name="stock"/></li>
+                                    <li><strong>Remaining Stock:</strong> <field name="remaining_stock"/></li>
                                 </ul>
                             </div>
                         </div>

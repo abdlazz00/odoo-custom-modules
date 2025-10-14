@@ -19,7 +19,7 @@
                     </div>
                     <group>
                         <group>
-                            <field name="member_id"/>
+                            <field name="member_id" domain="[('category_id', '=', 'Member')]"/>
                         </group>
                         <group>
                             <field name="borrow_date"/>
@@ -55,8 +55,9 @@
                 <field name="name"/>
                 <field name="member_id"/>
                 <field name="borrow_date"/>
-                <field name="return_due_date"/>
+                <field name="return_due_date" string="Tanggal Pengembalian"/>
                 <field name="state"/>
+                <field name="is_overdue" string="Terlambat" widget="boolean_toggle" readonly="1"/>
             </list>
         </field>
     </record>

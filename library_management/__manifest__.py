@@ -11,8 +11,8 @@
     "website": "https://github.com/abdlazz00",
     "depends": ["base", "mail"],
     "data": [
-        "security/ir.model.access.csv",
         "security/library_security.xml",
+        "security/ir.model.access.csv",
         "data/ir_sequence.xml",
         "data/library_scheduler.xml",
         "data/partner_data.xml",
@@ -21,8 +21,8 @@
         "views/library_transaction_views.xml",
         "views/library_settings_views.xml",
         "views/menus.xml",
-		"wizard/library_book_stock_wizard_views.xml",
-],
+        "wizard/library_book_stock_wizard_views.xml",
+    ],
     "assets": {
         "web.assets_backend": [
             "library_management/static/lib/chartjs/chart.umd.js",
@@ -37,4 +37,3 @@
     "application": True,
     "auto_install": False,
 }
-# -*- coding: utf-8 -*-

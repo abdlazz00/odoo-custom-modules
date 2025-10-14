@@ -9,7 +9,6 @@ class LibraryDashboardController(http.Controller):
     def get_dashboard_data(self):
         env = request.env
 
-        # ... (Kode KPI tidak berubah) ...
         books = env["library.book"].sudo().search([])
         total_books = len(books)
         total_stock_books = sum(books.mapped("stock"))
@@ -20,7 +19,6 @@ class LibraryDashboardController(http.Controller):
         total_fine_paid = sum(borrows.mapped("fine_paid"))
         total_fine_balance = sum(borrows.mapped("fine_balance"))
 
-        # ... (Kode chart tidak berubah) ...
         borrow_chart = (
             env["library.borrow"]
             .sudo()
@@ -38,7 +36,6 @@ class LibraryDashboardController(http.Controller):
             {"label": "Belum Dibayar", "value": total_fine_balance},
         ]
 
-        # PASTIKAN BLOK INI SUDAH DIGANTI
         book_stock_list = (
             env["library.book"]
             .sudo()
@@ -62,7 +59,6 @@ class LibraryDashboardController(http.Controller):
             )
         )
 
-        # Kode di bawah ini sudah benar
         top_members_list = []
         for m in top_members_query:
             if m.get("member_id"):
@@ -73,10 +69,6 @@ class LibraryDashboardController(http.Controller):
                         "borrow_count": m["member_id_count"],
                     }
                 )
-
-        # =====================================================
-        # 🔹 RETURN STRUCTURE
-        # =====================================================
         return {
             "kpi": {
                 "total_books": total_books,

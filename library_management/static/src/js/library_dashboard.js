@@ -26,16 +26,13 @@ class LibraryDashboard extends Component {
         });
     }
 
-    // ======================================================
     // AUTO REFRESH
-    // ======================================================
+    // Refresh setiap 5 menit
     _startAutoRefresh() {
-        setInterval(() => this.loadAll(false), 300000); // Refresh setiap 5 menit
+        setInterval(() => this.loadAll(false), 300000);
     }
 
-    // ======================================================
     // LOAD DATA DARI CONTROLLER
-    // ======================================================
     async loadAll(showSpinner = true) {
         try {
             if (showSpinner) this.state.loading = true;
@@ -54,9 +51,7 @@ class LibraryDashboard extends Component {
             const data = result.result;
             console.log("📦 Data dashboard diterima:", data);
 
-            // ======================================================
             // KPI
-            // ======================================================
             const k = data.kpi || {};
             this.state.kpis = {
                 total_books: k.total_books || 0,
@@ -67,16 +62,12 @@ class LibraryDashboard extends Component {
                 total_fines_balance: this._formatCurrency(k.total_fines_balance || 0),
             };
 
-            // ======================================================
             // TOP DATA
-            // ======================================================
             this.state.book_stock_list = data.book_stock_list || [];
 
             this.state.top_members_list = data.top_members_list || [];
 
-            // ======================================================
             // RENDER CHART
-            // ======================================================
             setTimeout(() => {
                 this._renderBorrowChart(data.borrow_chart);
                 this._renderCategoryChart(data.category_chart);
@@ -92,9 +83,6 @@ class LibraryDashboard extends Component {
         }
     }
 
-    // ======================================================
-    // UTIL: FORMAT RUPIAH
-    // ======================================================
     _formatCurrency(value) {
         return new Intl.NumberFormat("id-ID", {
             style: "currency",
@@ -103,9 +91,6 @@ class LibraryDashboard extends Component {
         }).format(value);
     }
 
-    // ======================================================
-    // CHART RENDERERS
-    // ======================================================
 
     _renderBorrowChart(data) {
         console.log("📊 Borrow chart data:", data);
@@ -140,9 +125,7 @@ class LibraryDashboard extends Component {
         this._renderChart(canvas, "doughnut", labels, values, "Status Pembayaran Denda");
     }
 
-    // ======================================================
     // GENERIC CHART RENDERER
-    // ======================================================
     _renderChart(canvasEl, type, labels, values, label = "") {
         if (!canvasEl) {
             console.warn("⏳ Canvas belum siap untuk chart:", label);
@@ -167,7 +150,7 @@ class LibraryDashboard extends Component {
                     label,
                     data: values,
                     backgroundColor: [
-                        "#007bff", "#28a745", "#ffc107", "#dc3545", "#17a2b8",
+                        "#007bff", "#dc3545","#28a745", "#ffc107", "#17a2b8",
                         "#6610f2", "#fd7e14", "#20c997", "#6f42c1", "#198754"
                     ],
                 }],
@@ -191,8 +174,6 @@ class LibraryDashboard extends Component {
     }
 }
 
-// ======================================================
 // REGISTER DASHBOARD ACTION
-// ======================================================
 LibraryDashboard.template = "library_management.Dashboard";
 registry.category("actions").add("library_management.dashboard", LibraryDashboard);
